@@ -1,0 +1,37 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: backend_app
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    ports:
+      - '3000:3000'
+    environment:
+      DATABASE_URL: 'postgresql://jordans:slitest@localhost:5432/SLI?schema=public'
+    depends_on:
+      - frontend_expo
+      - frontend_vite
+
+  frontend_expo:
+    image: node:22-alpine
+    container_name: expo_app
+    working_dir: /app
+    volumes:
+      - ./frontend_expo:/app
+      - /app/node_modules
+    ports:
+      - '19000:19000'
+    command: sh -c "npm install && npm install -g @expo/ngrok && npm start -- --tunnel"
+
+  frontend_vite:
+    image: node:22-alpine
+    container_name: vite_app
+    working_dir: /app
+    volumes:
+      - ./frontend_vite:/app
+      - /app/node_modules
+    ports:
+      - '5173:5173'
+    command: sh -c "npm install && npm run dev"
